@@ -1,0 +1,16 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { CartProvider } from "@/lib/cart";
+import { Header } from "@/components/Header";
+
+export function AppShell({ children }: { children: ReactNode }) {
+  return (
+    <CartProvider>
+      <div className="shell">
+        <Header />
+        <main className="container">{children}</main>
+      </div>
+    </CartProvider>
+  );
+}
