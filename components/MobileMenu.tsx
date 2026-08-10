@@ -33,15 +33,6 @@ export function MobileMenu({ open, onClose }: Props) {
         <Link href="/cart" onClick={onClose}>
           Cart
         </Link>
-        <Link href="/dashboard" onClick={onClose}>
-          Dashboard
-        </Link>
-        <Link href="/login" onClick={onClose}>
-          Log in
-        </Link>
-        <Link href="/signup" onClick={onClose}>
-          Sign up
-        </Link>
         <button type="button" className="linkish" onClick={onClose}>
           Close
         </button>

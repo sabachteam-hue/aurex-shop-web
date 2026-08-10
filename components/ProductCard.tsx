@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/lib/cart";
@@ -8,17 +9,14 @@ import type { Product } from "@/lib/types";
 
 type Props = {
   product: Product;
-  badge?: "flash" | "discount" | null;
 };
 
-function resolveBadge(product: Product, badge?: Props["badge"]) {
-  if (badge) return badge;
-  if (product.stockLabel === "Low stock") return "flash" as const;
-  if (product.sellPrice > 0 && product.sellPrice < 1) return "discount" as const;
-  return null;
+function discountPercent(product: Product): number | null {
+  if (!product.originalPrice || product.originalPrice <= product.sellPrice) return null;
+  return Math.round((1 - product.sellPrice / product.originalPrice) * 100);
 }
 
-export function ProductCard({ product, badge }: Props) {
+export function ProductCard({ product }: Props) {
   const { add } = useCart();
   const categoryName =
     product.categoryName ||
@@ -29,7 +27,7 @@ export function ProductCard({ product, badge }: Props) {
       : product.stockLabel === "Low stock"
         ? "stock-low"
         : "stock-ok";
-  const showBadge = resolveBadge(product, badge);
+  const discount = discountPercent(product);
 
   return (
     <motion.article
@@ -37,17 +35,33 @@ export function ProductCard({ product, badge }: Props) {
       whileHover={{ y: -3 }}
       transition={{ type: "spring", stiffness: 320, damping: 24 }}
     >
-      {showBadge ? (
+      {discount ? (
         <div className="card-badges">
-          <span className={`pill-badge ${showBadge}`}>
-            {showBadge === "flash" ? "Flash Deal" : "Discount"}
-          </span>
+          <span className="pill-badge discount">Sale −{discount}%</span>
         </div>
       ) : null}
+
+      {product.imageUrl ? (
+        <Link
+          href={`/products/${encodeURIComponent(product.sku)}`}
+          className="product-card-image"
+        >
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={400}
+            height={225}
+            className="product-card-image-el"
+          />
+        </Link>
+      ) : null}
+
       <div className="product-card-top">
-        <div className="product-emoji" aria-hidden>
-          {product.emoji}
-        </div>
+        {!product.imageUrl ? (
+          <div className="product-emoji" aria-hidden>
+            {product.emoji}
+          </div>
+        ) : null}
         <div>
           <h3>
             <Link href={`/products/${encodeURIComponent(product.sku)}`}>
@@ -60,7 +74,14 @@ export function ProductCard({ product, badge }: Props) {
           </div>
         </div>
       </div>
-      <div className="price">{product.sellPrice.toFixed(2)} USDT</div>
+
+      <div className="price-row">
+        <div className="price">{product.sellPrice.toFixed(2)} USDT</div>
+        {discount ? (
+          <div className="price-original">{product.originalPrice!.toFixed(2)} USDT</div>
+        ) : null}
+      </div>
+
       <div className="card-actions">
         <Link
           className="btn btn-ghost"

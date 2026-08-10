@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { MobileMenu } from "@/components/MobileMenu";
 import { useCart } from "@/lib/cart";
@@ -10,10 +10,20 @@ import { BRAND_NAME } from "@/lib/mock-data";
 export function Header() {
   const { count } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 8);
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="header">
+      <header className={`header${scrolled ? " scrolled" : ""}`}>
         <div className="container header-inner">
           <Link href="/" className="brand" aria-label={`${BRAND_NAME} home`}>
             <BrandLogo size={36} />
@@ -22,8 +32,6 @@ export function Header() {
 
           <nav className="nav-desktop" aria-label="Primary">
             <Link href="/catalog">Catalog</Link>
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/login">Log in</Link>
           </nav>
 
           <div className="header-actions">

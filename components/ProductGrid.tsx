@@ -19,14 +19,36 @@ export function ProductGrid({
 
   return (
     <Stagger className="product-grid">
-      {products.map((product, index) => (
+      {products.map((product) => (
         <StaggerItem key={product.sku}>
-          <ProductCard
-            product={product}
-            badge={index === 0 ? "flash" : index === 1 ? "discount" : undefined}
-          />
+          <ProductCard product={product} />
         </StaggerItem>
       ))}
     </Stagger>
+  );
+}
+
+/** Skeleton placeholders shown while the catalog is loading, same grid shape as ProductGrid. */
+export function ProductGridSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <div className="product-grid" aria-hidden aria-busy="true">
+      {Array.from({ length: count }).map((_, i) => (
+        <div className="product-card skeleton-card" key={i}>
+          <div className="skeleton-block skeleton-image" />
+          <div className="product-card-top">
+            <div className="skeleton-block skeleton-emoji" />
+            <div style={{ flex: 1 }}>
+              <div className="skeleton-block skeleton-line" style={{ width: "70%" }} />
+              <div className="skeleton-block skeleton-line" style={{ width: "45%" }} />
+            </div>
+          </div>
+          <div className="skeleton-block skeleton-line" style={{ width: "35%", height: 22 }} />
+          <div className="card-actions">
+            <div className="skeleton-block skeleton-btn" />
+            <div className="skeleton-block skeleton-btn" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

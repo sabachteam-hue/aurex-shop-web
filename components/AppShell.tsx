@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="shell">
         <Header />
         <main className="container">{children}</main>
+        <Footer />
       </div>
     </CartProvider>
   );
