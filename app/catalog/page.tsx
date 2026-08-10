@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { CatalogClient } from "@/components/CatalogClient";
 import { ProductGridSkeleton } from "@/components/ProductGrid";
 
+export const dynamic = "force-dynamic";
+
 export default function CatalogPage() {
   return (
     <Suspense
