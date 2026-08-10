@@ -18,10 +18,24 @@ const figtree = Figtree({
 
 export const metadata: Metadata = {
   title: {
-    default: BRAND_NAME,
+    default: `${BRAND_NAME} — Premium Digital Products`,
     template: `%s · ${BRAND_NAME}`,
   },
-  description: "SMF Shop — premium digital products storefront and Telegram Mini App.",
+  description:
+    "Browse a curated catalog of premium digital products and services. Instant delivery, tracked orders, and real support.",
+  openGraph: {
+    title: `${BRAND_NAME} — Premium Digital Products`,
+    description:
+      "Browse a curated catalog of premium digital products and services. Instant delivery, tracked orders, and real support.",
+    siteName: BRAND_NAME,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${BRAND_NAME} — Premium Digital Products`,
+    description:
+      "Browse a curated catalog of premium digital products and services. Instant delivery, tracked orders, and real support.",
+  },
 };
 
 export const viewport: Viewport = {
