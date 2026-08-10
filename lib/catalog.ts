@@ -5,7 +5,7 @@ import {
   products as mockProducts,
   searchProducts as searchMockProducts,
 } from "@/lib/mock-data";
-import type { Category, Product } from "@/lib/types";
+import type { Category, Product, ShopStats } from "@/lib/types";
 
 export type CatalogSource = "api" | "mock";
 
@@ -96,6 +96,20 @@ export async function loadFeaturedProducts(limit = 3): Promise<{
     source: prodResult.source,
     error: prodResult.error || catResult.error,
   };
+}
+
+/**
+ * Live customer/order counts for the hero. Intentionally has no mock
+ * fallback — if the API is unset or the endpoint fails, callers should omit
+ * the stats section rather than show a hardcoded or zeroed-out number.
+ */
+export async function loadStats(): Promise<ShopStats | null> {
+  if (!getApiBaseUrl()) return null;
+  try {
+    return await api.getStats();
+  } catch {
+    return null;
+  }
 }
 
 export { mockProducts };

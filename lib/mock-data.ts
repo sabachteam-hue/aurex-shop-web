@@ -23,6 +23,7 @@ export const products: Product[] = [
     description:
       "Full Canva Pro access for design teams. Instant delivery after payment. Mock listing for storefront UI only.",
     sellPrice: 0.4,
+    originalPrice: 0.6,
     categoryId: 1,
     emoji: "🖤",
     inStock: true,
@@ -45,6 +46,7 @@ export const products: Product[] = [
     description:
       "Gemini access links pack. Placeholder copy for Phase 1 mock catalog.",
     sellPrice: 2.5,
+    originalPrice: 3.0,
     categoryId: 2,
     emoji: "🛴",
     inStock: true,

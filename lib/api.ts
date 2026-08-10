@@ -6,7 +6,7 @@
  * until staging tests pass.
  */
 
-import type { Category, Product } from "@/lib/types";
+import type { Category, Product, ShopStats } from "@/lib/types";
 
 const API_BASE =
   (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE_URL) || "";
@@ -35,14 +35,21 @@ type ApiProduct = {
   name: string;
   description?: string | null;
   sell_price: number;
+  original_price?: number | null;
   category_id: number | null;
   category?: string | null;
   emoji?: string | null;
+  image_url?: string | null;
   min_qty?: number;
   max_qty?: number;
   stock?: number;
   in_stock?: boolean;
   stock_label?: string;
+};
+
+type ApiStats = {
+  customers?: number;
+  orders_completed?: number;
 };
 
 function mapCategory(row: ApiCategory): Category {
@@ -57,14 +64,21 @@ function mapCategory(row: ApiCategory): Category {
 }
 
 function mapProduct(row: ApiProduct): Product {
+  const originalPrice =
+    row.original_price != null ? Number(row.original_price) : null;
   return {
     sku: row.sku,
     name: row.name,
     description: row.description || "",
     sellPrice: Number(row.sell_price || 0),
+    originalPrice:
+      originalPrice != null && originalPrice > Number(row.sell_price || 0)
+        ? originalPrice
+        : null,
     categoryId: row.category_id,
     categoryName: row.category ?? null,
     emoji: row.emoji || "🛍️",
+    imageUrl: row.image_url || null,
     inStock: Boolean(row.in_stock),
     stockLabel: row.stock_label || (row.in_stock ? "In stock" : "Out of stock"),
     minQty: row.min_qty,
@@ -133,5 +147,14 @@ export const api = {
       `/api/web/products/${encodeURIComponent(sku)}`,
     );
     return mapProduct(row);
+  },
+
+  /** Optional. Callers should treat a failure here as "hide the stats row", not an error banner. */
+  async getStats(): Promise<ShopStats> {
+    const row = await request<ApiStats>("/api/web/stats");
+    return {
+      customers: Number(row.customers || 0),
+      ordersCompleted: Number(row.orders_completed || 0),
+    };
   },
 };
