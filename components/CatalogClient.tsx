@@ -3,19 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CategoryGrid } from "@/components/CategoryGrid";
+import { FlashDealsBar } from "@/components/FlashDealsBar";
 import { ProductGrid, ProductGridSkeleton } from "@/components/ProductGrid";
 import { SearchBar } from "@/components/SearchBar";
 import { loadCategories, loadProducts, type CatalogSource } from "@/lib/catalog";
 import type { Category, Product } from "@/lib/types";
 
 type PriceRange = "all" | "under5" | "5to15" | "over15";
-
-const PRICE_RANGES: { id: PriceRange; label: string }[] = [
-  { id: "all", label: "Any price" },
-  { id: "under5", label: "Under $5" },
-  { id: "5to15", label: "$5 – $15" },
-  { id: "over15", label: "Over $15" },
-];
+type PlatformFilter = "all" | "web" | "desktop" | "mobile" | "multi";
 
 function inPriceRange(price: number, range: PriceRange): boolean {
   switch (range) {
@@ -33,9 +28,11 @@ function inPriceRange(price: number, range: PriceRange): boolean {
 export function CatalogClient() {
   const searchParams = useSearchParams();
   const initialCategory = Number(searchParams.get("category") || "") || null;
-  const [query, setQuery] = useState("");
+  const initialQuery = searchParams.get("q") || "";
+  const [query, setQuery] = useState(initialQuery);
   const [categoryId, setCategoryId] = useState<number | null>(initialCategory);
   const [priceRange, setPriceRange] = useState<PriceRange>("all");
+  const [platform, setPlatform] = useState<PlatformFilter>("all");
   const [inStockOnly, setInStockOnly] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -82,21 +79,20 @@ export function CatalogClient() {
     return products.filter((p) => {
       if (inStockOnly && !p.inStock) return false;
       if (!inPriceRange(p.sellPrice, priceRange)) return false;
+      if (platform !== "all" && p.platform && p.platform !== platform) return false;
       return true;
     });
-  }, [products, priceRange, inStockOnly]);
+  }, [products, priceRange, platform, inStockOnly]);
 
   return (
     <section className="section" style={{ marginTop: 20 }}>
-      <div className="section-head">
-        <div>
-          <h2>Catalog</h2>
-          <p>
-            {source === "api"
-              ? "Live products from the shop API"
-              : "Sample catalog (set NEXT_PUBLIC_API_BASE_URL for live data)"}
-          </p>
-        </div>
+      <div className="section-head" style={{ display: "block", textAlign: "center" }}>
+        <h2 style={{ fontSize: "1.9rem" }}>Premium Digital Products</h2>
+        <p>
+          {source === "api"
+            ? "Live products from the shop API"
+            : "Sample catalog (set NEXT_PUBLIC_API_BASE_URL for live data)"}
+        </p>
       </div>
 
       {error ? (
@@ -105,34 +101,53 @@ export function CatalogClient() {
         </p>
       ) : null}
 
-      <SearchBar value={query} onChange={setQuery} />
-
-      <div style={{ marginBottom: 16 }}>
-        <CategoryGrid
-          categories={categories}
-          activeId={categoryId}
-          onSelect={setCategoryId}
-        />
+      <div style={{ maxWidth: 560, margin: "0 auto 22px" }}>
+        <SearchBar value={query} onChange={setQuery} placeholder="Search for premium tools…" />
       </div>
 
-      <div className="filter-row">
-        <div className="filter-group" role="group" aria-label="Filter by price">
-          {PRICE_RANGES.map((range) => (
-            <button
-              key={range.id}
-              type="button"
-              className={`chip${priceRange === range.id ? " active" : ""}`}
-              onClick={() => setPriceRange(range.id)}
-            >
-              {range.label}
-            </button>
-          ))}
+      <FlashDealsBar />
+
+      <CategoryGrid
+        categories={categories}
+        products={products}
+        activeId={categoryId}
+        onSelect={setCategoryId}
+      />
+
+      <div className="filter-dropdown-row">
+        <div className="filter-dropdown">
+          <label htmlFor="pricing-filter">Pricing:</label>
+          <select
+            id="pricing-filter"
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.target.value as PriceRange)}
+          >
+            <option value="all">All</option>
+            <option value="under5">Under $5</option>
+            <option value="5to15">$5 - $15</option>
+            <option value="over15">Over $15</option>
+          </select>
+        </div>
+        <div className="filter-dropdown">
+          <label htmlFor="platform-filter">Platform:</label>
+          <select
+            id="platform-filter"
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value as PlatformFilter)}
+          >
+            <option value="all">All</option>
+            <option value="web">Web App</option>
+            <option value="desktop">Desktop</option>
+            <option value="mobile">Mobile</option>
+            <option value="multi">Multi-Platform</option>
+          </select>
         </div>
         <button
           type="button"
           className={`chip${inStockOnly ? " active" : ""}`}
           aria-pressed={inStockOnly}
           onClick={() => setInStockOnly((v) => !v)}
+          style={{ marginLeft: "auto" }}
         >
           In stock only
         </button>

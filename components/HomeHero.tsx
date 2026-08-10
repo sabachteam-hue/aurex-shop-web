@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { BrandLogo } from "@/components/BrandLogo";
 import { FadeIn } from "@/components/Motion";
+import { PriceTickerCard } from "@/components/PriceTickerCard";
 import { TELEGRAM_USERNAME, WHATSAPP_NUMBER } from "@/lib/config";
-import { BRAND_NAME } from "@/lib/mock-data";
 import type { ShopStats } from "@/lib/types";
 
 type Props = {
@@ -20,39 +19,30 @@ export function HomeHero({ source, stats }: Props) {
       : null;
 
   return (
-    <section className="hero">
+    <section className="marketing-hero">
       <FadeIn>
-        <div className="hero-logo-wrap">
-          <div className="hero-logo-glow" aria-hidden />
-          <BrandLogo size={160} className="hero-logo" priority />
-        </div>
-      </FadeIn>
-      <FadeIn delay={0.08}>
-        <div className="hero-pills">
-          <span className="pill-badge flash">Flash Deals</span>
-          <span className="pill-badge discount">Member Discounts</span>
-        </div>
-        <h1 className="hero-brand">{BRAND_NAME}</h1>
+        <span className="marketing-eyebrow">Premium Digital Marketplace</span>
+        <h1 className="marketing-heading">
+          Unlock Premium Access.
+          <br />
+          <span className="grad">Intelligence Without Limits.</span>
+        </h1>
         <p>
-          Premium digital products — browse the catalog, add to cart, and check out in a
-          sleek dark storefront.
+          AI tools, SaaS subscriptions and premium accounts at unbeatable prices.
           {source === "api"
             ? " Showing live catalog data."
-            : " Using sample data until the API URL is configured."}
+            : " Using sample data until the API URL is configured."}{" "}
+          Secure checkout, with warranty terms shown on every listing.
         </p>
-        <div className="hero-actions">
+        <div className="marketing-actions">
           <Link className="btn btn-primary" href="/catalog">
-            Browse catalog
+            Explore Products →
           </Link>
           {contactHref ? (
-            <a className="btn btn-ghost" href={contactHref} target="_blank" rel="noreferrer">
-              Chat with us
+            <a className="btn btn-whatsapp" href={contactHref} target="_blank" rel="noreferrer">
+              <span aria-hidden>💬</span> WhatsApp Order
             </a>
-          ) : (
-            <Link className="btn btn-ghost" href="/catalog">
-              View all products
-            </Link>
-          )}
+          ) : null}
         </div>
 
         {stats ? (
@@ -67,6 +57,10 @@ export function HomeHero({ source, stats }: Props) {
             </div>
           </div>
         ) : null}
+      </FadeIn>
+
+      <FadeIn delay={0.1}>
+        <PriceTickerCard />
       </FadeIn>
     </section>
   );

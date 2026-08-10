@@ -28,7 +28,13 @@ export function MobileMenu({ open, onClose }: Props) {
           Home
         </Link>
         <Link href="/catalog" onClick={onClose}>
-          Catalog
+          Tools
+        </Link>
+        <Link href="/catalog" onClick={onClose}>
+          Use Cases
+        </Link>
+        <Link href="/catalog" onClick={onClose}>
+          Gifts 🔥
         </Link>
         <Link href="/cart" onClick={onClose}>
           Cart
