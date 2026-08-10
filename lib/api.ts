@@ -45,6 +45,11 @@ type ApiProduct = {
   stock?: number;
   in_stock?: boolean;
   stock_label?: string;
+  platform?: "web" | "desktop" | "mobile" | "multi";
+  note?: string;
+  warranty_label?: string;
+  warranty_percent?: number;
+  delivery_type?: "instant" | "manual";
 };
 
 type ApiStats = {
@@ -84,6 +89,14 @@ function mapProduct(row: ApiProduct): Product {
     minQty: row.min_qty,
     maxQty: row.max_qty,
     stock: row.stock,
+    platform: row.platform,
+    note: row.note,
+    warrantyLabel: row.warranty_label,
+    warrantyPercent: row.warranty_percent,
+    deliveryType: row.delivery_type || "instant",
+    accent: (["violet", "teal", "green", "rose"] as const)[
+      Math.abs(row.sku?.length || 0) % 4
+    ],
   };
 }
 
